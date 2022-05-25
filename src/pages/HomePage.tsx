@@ -1,10 +1,11 @@
 import { Box, Text } from "grommet";
 import StatsDashboardFetcher from "../components/StatsDashboardFetcher";
 import SalesListingFetcher from "../components/SalesListingFetcher";
-import { Collection } from "../models/collection";
-import { Link, useNavigate } from "react-router-dom";
+import { Collection, decodeCollection } from "../models/collection";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   ATTRIBUTES_PAGE_ROUTE,
+  HOME_PAGE_ROUTE,
   TOP_OWNERS_PAGE_ROUTE,
 } from "../constants/routes";
 import AsciiArt from "../components/AsciiArt";
@@ -12,18 +13,51 @@ import SearchFetcher, { SearchQuery } from "../components/SearchFetcher";
 import { cleanText } from "../utils/utils";
 import { SearchResult } from "../models/searchResults";
 import HeaderWithQueryBlock from "../components/HeaderWithQueryBlock";
+import { gql, useQuery } from "@apollo/client";
 
-interface HomePageProps {
-  onChangeCollectionAddress: (address: string) => void;
-  collection?: Collection;
-  isLoading: boolean;
-  onReset: () => void;
-}
+export const CollectionQuery = (collectionAddress: string): string => {
+  return `
+    query CollectionInfo {
+        collections(
+            networks: [{chain: MAINNET, network: ETHEREUM}], 
+            pagination: {limit: 10, offset: 0}, 
+            sort: {sortKey: NAME, sortDirection: ASC}, 
+            where: {collectionAddresses: ["${collectionAddress}"]}
+        ) {
+            nodes {
+                address
+                name
+                symbol
+                totalSupply
+                attributes {
+                    traitType
+                    valueMetrics {
+                        count
+                        percent
+                        value
+                    }
+                }
+            }
+        }
+    }
+`;
+};
 
-export default function HomePage(props: HomePageProps): JSX.Element {
+export default function HomePage(): JSX.Element {
+  let { collectionAddress } = useParams();
   let navigate = useNavigate();
+  const { loading, error, data } = useQuery(
+    gql(CollectionQuery(collectionAddress ?? "")),
+    {
+      skip: collectionAddress === null,
+    }
+  );
+  let collection = undefined;
+  if (data?.collections?.nodes != null && data?.collections?.nodes.length > 0) {
+    collection = decodeCollection(data.collections.nodes[0]);
+  }
   const handleSelectToken = (searchResult: SearchResult) => {
-    navigate(`/nft/${searchResult.tokenId!}`);
+    navigate(`/${searchResult.collectionAddress}/${searchResult.tokenId}`);
   };
   const indent = ">";
   return (
@@ -34,7 +68,10 @@ export default function HomePage(props: HomePageProps): JSX.Element {
         horizontal: "15%",
       }}
     >
-      <Box style={{ outline: "none" }} onClick={() => props.onReset()}>
+      <Box
+        style={{ outline: "none" }}
+        onClick={() => navigate(HOME_PAGE_ROUTE)}
+      >
         <HeaderWithQueryBlock
           headerText="zora the explorer"
           queryBlock={SearchQuery}
@@ -44,14 +81,14 @@ export default function HomePage(props: HomePageProps): JSX.Element {
         entityType="COLLECTION"
         placeholderText="try searching for a collection by name or address..."
         onSelectSearchResult={(searchResult: SearchResult) =>
-          props.onChangeCollectionAddress(searchResult.collectionAddress)
+          navigate(`/${searchResult.collectionAddress}`)
         }
       />
-      {props.collection ? (
+      {collection ? (
         <Box>
-          <AsciiArt text={cleanText(props.collection.name)} artStyle="2" />
+          <AsciiArt text={cleanText(collection.name)} artStyle="2" />
           <StatsDashboardFetcher
-            collectionAddress={props.collection.collectionAddress}
+            collectionAddress={collection.collectionAddress}
           />
           <Box
             direction="row"
@@ -60,7 +97,7 @@ export default function HomePage(props: HomePageProps): JSX.Element {
           >
             <Box width="48%">
               <Link
-                to={TOP_OWNERS_PAGE_ROUTE}
+                to={`/${collectionAddress}/owners`}
                 style={{ textDecoration: "none" }}
               >
                 <div
@@ -78,7 +115,7 @@ export default function HomePage(props: HomePageProps): JSX.Element {
 
             <Box width="48%">
               <Link
-                to={ATTRIBUTES_PAGE_ROUTE}
+                to={`/${collectionAddress}/attributes`}
                 style={{ textDecoration: "none" }}
               >
                 <div
@@ -95,7 +132,7 @@ export default function HomePage(props: HomePageProps): JSX.Element {
             </Box>
           </Box>
           <SalesListingFetcher
-            collectionAddress={props.collection.collectionAddress}
+            collectionAddress={collection.collectionAddress}
           />
           <HeaderWithQueryBlock
             headerText="search nfts"
@@ -103,13 +140,13 @@ export default function HomePage(props: HomePageProps): JSX.Element {
           />
           <SearchFetcher
             entityType="TOKEN"
-            collectionAddress={props.collection.collectionAddress}
+            collectionAddress={collection.collectionAddress}
             placeholderText="try searching for a token by id, name, attributes, etc..."
             onSelectSearchResult={handleSelectToken}
           />
         </Box>
       ) : (
-        !props.isLoading && (
+        !loading && (
           <Box
             style={{
               fontFamily: "papyrus",

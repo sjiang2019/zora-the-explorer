@@ -25,7 +25,7 @@ export default function SalesListing(props: SalesListingProps): JSX.Element {
               width="small"
               key={token.tokenId}
               onClick={() => {
-                navigate(`/nft/${token.tokenId}`);
+                navigate(`/${token.collectionAddress}/${token.tokenId}`);
               }}
             >
               <Image

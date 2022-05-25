@@ -5,7 +5,7 @@ import BreadCrumb from "../components/BreadCrumb";
 import HeaderWithQueryBlock from "../components/HeaderWithQueryBlock";
 import NFTView from "../components/NftView";
 import { HOME_PAGE_ROUTE } from "../constants/routes";
-import { Collection } from "../models/collection";
+import { Collection, decodeCollection } from "../models/collection";
 import { decodeEvent } from "../models/event";
 import { decodeSale } from "../models/sale";
 import { decodeToken, Token } from "../models/token";
@@ -102,6 +102,27 @@ const TokenQuery: string = `
                 }
               }
             }
+            collections(
+              networks: [{chain: MAINNET, network: ETHEREUM}], 
+              pagination: {limit: 10, offset: 0}, 
+              sort: {sortKey: NAME, sortDirection: ASC}, 
+              where: {collectionAddresses: [$collectionAddress]}
+          ) {
+              nodes {
+                  address
+                  name
+                  symbol
+                  totalSupply
+                  attributes {
+                      traitType
+                      valueMetrics {
+                          count
+                          percent
+                          value
+                      }
+                  }
+              }
+          }
     }
 `;
 
@@ -132,7 +153,7 @@ function NFTPageHeader(props: {
       <BreadCrumb
         prevPageName={props.collection.name ?? "Collection"}
         currentPageName={props.token.tokenId}
-        prevPageLink={HOME_PAGE_ROUTE}
+        prevPageLink={`/${props.collection.collectionAddress}`}
       />
       <Box direction="row" align="center">
         <HeaderWithQueryBlock
@@ -153,15 +174,11 @@ function NFTPageHeader(props: {
   );
 }
 
-interface NFTPageProps {
-  collection: Collection;
-}
-
-export default function NFTPage(props: NFTPageProps): JSX.Element {
-  let { id } = useParams();
+export default function NFTPage(): JSX.Element {
+  let { collectionAddress, id } = useParams();
   const { loading, error, data } = useQuery(gql(TokenQuery), {
     variables: {
-      collectionAddress: props.collection.collectionAddress,
+      collectionAddress: collectionAddress,
       tokenId: id,
     },
   });
@@ -178,11 +195,11 @@ export default function NFTPage(props: NFTPageProps): JSX.Element {
       ) : (
         <Box>
           <NFTPageHeader
-            collection={props.collection}
+            collection={decodeCollection(data.collections.nodes[0])}
             token={decodeToken(data.token.token)}
           />
           <NFTView
-            collection={props.collection}
+            collection={decodeCollection(data.collections.nodes[0])}
             token={decodeToken(data.token.token)}
             events={data.token.events.map((event: any) => decodeEvent(event))}
             sales={data.sales.nodes.map((node: any) => decodeSale(node.sale))}

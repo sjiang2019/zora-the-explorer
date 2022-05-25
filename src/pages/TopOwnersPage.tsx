@@ -1,16 +1,13 @@
 import { gql, useQuery } from "@apollo/client";
 import { Box } from "grommet";
 import { useState } from "react";
+import { useParams } from "react-router-dom";
 import BreadCrumb from "../components/BreadCrumb";
 import HeaderWithQueryBlock from "../components/HeaderWithQueryBlock";
 import OwnersListing from "../components/OwnersListing";
 import { HOME_PAGE_ROUTE } from "../constants/routes";
 import { Collection } from "../models/collection";
 import LoadingPage from "./LoadingPage";
-
-interface TopOwnersProps {
-  collection: Collection;
-}
 
 const LIMIT = 20;
 
@@ -28,11 +25,12 @@ const TopOwnersPageQuery: string = `
     }
 `;
 
-export default function TopOwnersPage(props: TopOwnersProps): JSX.Element {
+export default function TopOwnersPage(): JSX.Element {
+  let { collectionAddress } = useParams();
   const [offset, setOffset] = useState(0);
   const { loading, data } = useQuery(gql(TopOwnersPageQuery), {
     variables: {
-      collectionAddress: props.collection.collectionAddress,
+      collectionAddress: collectionAddress,
       offset: offset,
       limit: LIMIT,
     },
@@ -56,9 +54,9 @@ export default function TopOwnersPage(props: TopOwnersProps): JSX.Element {
       }}
     >
       <BreadCrumb
-        prevPageName={props.collection.name ?? "Collection"}
+        prevPageName={collectionAddress ?? "collection"}
         currentPageName="owners"
-        prevPageLink={HOME_PAGE_ROUTE}
+        prevPageLink={`/${collectionAddress}`}
       />
       <HeaderWithQueryBlock
         headerText="owners"

@@ -1,4 +1,4 @@
-import { Box, Button, Drop, TextInput } from "grommet";
+import { Box, Button, Drop, Text, TextInput } from "grommet";
 import { Search } from "grommet-icons";
 import { useRef, useState } from "react";
 import { BACKGROUND_COLORS } from "../constants/base";
@@ -59,7 +59,7 @@ export default function SearchInput(props: SearchInputProps): JSX.Element {
         ref={targetRef as any}
       >
         <TextInput
-          placeholder={props.placeholder}
+          placeholder={<Text color="dark gray">{props.placeholder}</Text>}
           value={searchText.length > 0 ? searchText : undefined}
           onChange={(event) => setSearchText(event.target.value)}
           style={{
