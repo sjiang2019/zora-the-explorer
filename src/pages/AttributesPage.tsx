@@ -1,15 +1,11 @@
 import { gql, useQuery } from "@apollo/client";
 import { Box, Heading } from "grommet";
+import { useParams } from "react-router-dom";
 import BreadCrumb from "../components/BreadCrumb";
 import CollectionAttributesListing from "../components/CollectionAttributesListing";
 import HeaderWithQueryBlock from "../components/HeaderWithQueryBlock";
 import Loading from "../components/Loading";
 import { HOME_PAGE_ROUTE } from "../constants/routes";
-import { Collection } from "../models/collection";
-
-interface AttributesProps {
-  collection: Collection;
-}
 
 const AttributesQuery: string = `
     query AggregateAttributes($collectionAddress: String!) {
@@ -33,9 +29,10 @@ const AttributesQuery: string = `
     }
 `;
 
-export default function AttributesPage(props: AttributesProps): JSX.Element {
+export default function AttributesPage(): JSX.Element {
+  let { collectionAddress } = useParams();
   const { loading, error, data } = useQuery(gql(AttributesQuery), {
-    variables: { collectionAddress: props.collection.collectionAddress },
+    variables: { collectionAddress: collectionAddress },
   });
   return (
     <Box
@@ -46,9 +43,9 @@ export default function AttributesPage(props: AttributesProps): JSX.Element {
       style={{ fontFamily: "papyrus", minHeight: "100vh" }}
     >
       <BreadCrumb
-        prevPageName={props.collection.name ?? "Collection"}
+        prevPageName={collectionAddress ?? "colection"}
         currentPageName="traits and attributes"
-        prevPageLink={HOME_PAGE_ROUTE}
+        prevPageLink={`/${collectionAddress}`}
       />
       <HeaderWithQueryBlock
         headerText="traits and attributes"
@@ -63,9 +60,7 @@ export default function AttributesPage(props: AttributesProps): JSX.Element {
         />
       ) : (
         <Box height="100vh">
-          <Heading level={3}>
-            No attributes found for {props.collection.name}.
-          </Heading>
+          <Heading level={3}>No attributes found.</Heading>
         </Box>
       )}
     </Box>
