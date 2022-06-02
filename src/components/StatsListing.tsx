@@ -83,7 +83,7 @@ export default function StatsListing(props: StatsDashboardProps): JSX.Element {
     />,
   ];
   return (
-    <Box>
+    <Box style={{ fontSize: "24px" }}>
       <Ticker direction="toLeft" mode="chain">
         {({ index }) => statsList[index % statsList.length]}
       </Ticker>
