@@ -38,7 +38,7 @@ export default function SalesListing(props: SalesListingProps): JSX.Element {
                 <strong>#{token.tokenId}</strong>
               </Text>
               <Text>
-                {normalizeNumber(sale.price.ethPrice)}Ξ ($
+                {normalizeNumber(sale.price.chainTokenPrice)}Ξ ($
                 {normalizeNumber(sale.price.usdcPrice)})
               </Text>
               <Text color="dark-3">

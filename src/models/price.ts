@@ -1,9 +1,9 @@
 export interface Price {
-  ethPrice?: number;
+  chainTokenPrice?: number;
   usdcPrice?: number;
 }
 
 export const decodePrice = (price: any): Price => ({
-  ethPrice: price.ethPrice?.decimal,
+  chainTokenPrice: price.chainTokenPrice?.decimal,
   usdcPrice: price.usdcPrice?.decimal,
 });

@@ -1,25 +1,26 @@
 import { gql, useQuery } from "@apollo/client";
 import { Box } from "grommet";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import BreadCrumb from "../components/BreadCrumb";
 import HeaderWithQueryBlock from "../components/HeaderWithQueryBlock";
 import OwnersListing from "../components/OwnersListing";
-import { HOME_PAGE_ROUTE } from "../constants/routes";
-import { Collection } from "../models/collection";
 import LoadingPage from "./LoadingPage";
 
 const LIMIT = 20;
 
 const TopOwnersPageQuery: string = `
-    query TopOwners($collectionAddress: String!, $limit: Int!, $offset: Int!) {
+    query TopOwners($collectionAddress: String!, $limit: Int!, $after: String) {
         aggregateStat {
-            ownersByCount(networks: [{chain: MAINNET, network: ETHEREUM}], pagination: {limit: $limit, offset: $offset}, where: {collectionAddresses: [$collectionAddress]}) {
+            ownersByCount(networks: [{chain: MAINNET, network: ETHEREUM}], pagination: {limit: $limit, after: $after}, where: {collectionAddresses: [$collectionAddress]}) {
                 nodes {
                     owner
                     count
                 }
-                hasNextPage
+                pageInfo {
+                  hasNextPage
+                  endCursor
+                }
             }
         }
     }
@@ -27,24 +28,39 @@ const TopOwnersPageQuery: string = `
 
 export default function TopOwnersPage(): JSX.Element {
   let { collectionAddress } = useParams();
-  const [offset, setOffset] = useState(0);
+  const [endCursor, setEndCursor] = useState<string | null>(null);
+  const [seenCursors, setSeenCursors] = useState<Array<string>>([]);
   const { loading, data } = useQuery(gql(TopOwnersPageQuery), {
     variables: {
       collectionAddress: collectionAddress,
-      offset: offset,
+      after: endCursor,
       limit: LIMIT,
     },
   });
   const handleClickPrevPage = () => {
-    if (offset - LIMIT >= 0) {
-      setOffset(offset - LIMIT);
+    if (endCursor != null) {
+      const cursorIndex = seenCursors.indexOf(endCursor);
+      if (cursorIndex >= 0) {
+        if (cursorIndex === 0) {
+          setEndCursor(null);
+        } else {
+          setEndCursor(seenCursors[cursorIndex - 1]);
+        }
+      }
     }
   };
   const handleClickNextPage = () => {
-    if (data.aggregateStat.ownersByCount.hasNextPage) {
-      setOffset(offset + LIMIT);
+    if (data.aggregateStat.ownersByCount.pageInfo.hasNextPage) {
+      setEndCursor(data.aggregateStat.ownersByCount.pageInfo.endCursor);
     }
   };
+  useEffect(() => {
+    if (endCursor != null && !seenCursors.includes(endCursor)) {
+      setSeenCursors((seenCursors) => [...seenCursors, endCursor]);
+    }
+  }, [endCursor, seenCursors]);
+  const startIndex =
+    endCursor == null ? 0 : (seenCursors.indexOf(endCursor) + 1) * LIMIT;
   return (
     <Box
       pad="large"
@@ -66,9 +82,9 @@ export default function TopOwnersPage(): JSX.Element {
         <LoadingPage />
       ) : (
         <OwnersListing
-          startIndex={offset}
+          startIndex={startIndex}
           ownerCounts={data.aggregateStat.ownersByCount.nodes}
-          hasNextPage={data.aggregateStat.ownersByCount.hasNextPage}
+          hasNextPage={data.aggregateStat.ownersByCount.pageInfo.hasNextPage}
           onClickNextPage={handleClickNextPage}
           onClickPrevPage={handleClickPrevPage}
         />
