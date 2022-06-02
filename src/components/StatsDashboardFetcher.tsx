@@ -24,7 +24,7 @@ const OverallStatsQuery: string = `
                 networks: [{network: ETHEREUM, chain: MAINNET}], 
                 where: {collectionAddresses: [$collectionAddress]}
             ) {
-                ethPrice
+                chainTokenPrice
                 usdcPrice
             }
             lastDaySalesVolume: salesVolume(
@@ -32,7 +32,7 @@ const OverallStatsQuery: string = `
                 where: {collectionAddresses: [$collectionAddress]},
                 timeFilter: {lookbackHours: 24}
             ) {
-                ethPrice
+                chainTokenPrice
                 usdcPrice
             }
             lastWeekSalesVolume: salesVolume(
@@ -40,7 +40,7 @@ const OverallStatsQuery: string = `
                 where: {collectionAddresses: [$collectionAddress]},
                 timeFilter: {lookbackHours: 168}
             ) {
-                ethPrice
+                chainTokenPrice
                 usdcPrice
             }
             lastFourWeeksSalesVolume: salesVolume(
@@ -48,7 +48,7 @@ const OverallStatsQuery: string = `
                 where: {collectionAddresses: [$collectionAddress]},
                 timeFilter: {lookbackHours: 672}
             ) {
-                ethPrice
+                chainTokenPrice
                 usdcPrice
             }
             lastYearSalesCount: salesVolume(
@@ -61,8 +61,8 @@ const OverallStatsQuery: string = `
         }
         markets(
             networks: [{network: ETHEREUM, chain: MAINNET}], 
-            pagination: {limit: 1, offset: 0}, 
-            sort: {sortKey: ETH_PRICE, sortDirection: ASC}, 
+            pagination: {limit: 1}, 
+            sort: {sortKey: CHAIN_TOKEN_PRICE, sortDirection: ASC}, 
             filter: {marketFilters: [
                 {marketType: V1_ASK, statuses: [ACTIVE]}, 
                 {marketType: V3_ASK, statuses: [ACTIVE]}
@@ -72,7 +72,7 @@ const OverallStatsQuery: string = `
             nodes {
                 market {
                     price {
-                        ethPrice {
+                        chainTokenPrice {
                             decimal
                         }
                         usdcPrice {

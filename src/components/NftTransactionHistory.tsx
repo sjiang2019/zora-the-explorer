@@ -52,7 +52,7 @@ export default function NFTTransactionHistory(props: {
                 <TableCell scope="row">Sale</TableCell>
                 <TableCell>
                   ${normalizeNumber(eventOrSale.price.usdcPrice)} (
-                  {eventOrSale.price.ethPrice}Ξ)
+                  {eventOrSale.price.chainTokenPrice}Ξ)
                 </TableCell>
                 <TableCell>{eventOrSale.sellerAddress}</TableCell>
                 <TableCell>{eventOrSale.buyerAddress}</TableCell>

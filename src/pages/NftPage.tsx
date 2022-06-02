@@ -4,7 +4,6 @@ import { useParams } from "react-router-dom";
 import BreadCrumb from "../components/BreadCrumb";
 import HeaderWithQueryBlock from "../components/HeaderWithQueryBlock";
 import NFTView from "../components/NftView";
-import { HOME_PAGE_ROUTE } from "../constants/routes";
 import { Collection, decodeCollection } from "../models/collection";
 import { decodeEvent } from "../models/event";
 import { decodeSale } from "../models/sale";
@@ -49,7 +48,7 @@ const TokenQuery: string = `
                 }
             }
             events(
-                pagination: {limit: 10, offset: 0}, 
+                pagination: {limit: 10}, 
                 sort: {sortKey: CREATED, sortDirection: DESC}, 
                 filter: {eventTypes: [MINT_EVENT, TRANSFER_EVENT]}
             ) {
@@ -64,8 +63,8 @@ const TokenQuery: string = `
                         tokenId
                         originatorAddress
                         toAddress
-                        fee {
-                            ethPrice {
+                        price {
+                            chainTokenPrice {
                                 decimal
                             }
                             usdcPrice {
@@ -87,7 +86,7 @@ const TokenQuery: string = `
                 sale {
                   saleType
                   price {
-                    ethPrice {
+                    chainTokenPrice {
                       decimal
                     }
                     usdcPrice {
@@ -104,7 +103,7 @@ const TokenQuery: string = `
             }
             collections(
               networks: [{chain: MAINNET, network: ETHEREUM}], 
-              pagination: {limit: 10, offset: 0}, 
+              pagination: {limit: 10}, 
               sort: {sortKey: NAME, sortDirection: ASC}, 
               where: {collectionAddresses: [$collectionAddress]}
           ) {

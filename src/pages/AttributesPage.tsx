@@ -5,13 +5,12 @@ import BreadCrumb from "../components/BreadCrumb";
 import CollectionAttributesListing from "../components/CollectionAttributesListing";
 import HeaderWithQueryBlock from "../components/HeaderWithQueryBlock";
 import Loading from "../components/Loading";
-import { HOME_PAGE_ROUTE } from "../constants/routes";
 
 const AttributesQuery: string = `
     query AggregateAttributes($collectionAddress: String!) {
         collections(
             networks: [{chain: MAINNET, network: ETHEREUM}], 
-            pagination: {limit: 10, offset: 0}, 
+            pagination: {limit: 10}, 
             sort: {sortKey: NAME, sortDirection: ASC}, 
             where: {collectionAddresses: [$collectionAddress]}
         ) {

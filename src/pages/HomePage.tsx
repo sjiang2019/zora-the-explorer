@@ -1,13 +1,9 @@
 import { Box, Text } from "grommet";
 import StatsDashboardFetcher from "../components/StatsDashboardFetcher";
 import SalesListingFetcher from "../components/SalesListingFetcher";
-import { Collection, decodeCollection } from "../models/collection";
+import { decodeCollection } from "../models/collection";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import {
-  ATTRIBUTES_PAGE_ROUTE,
-  HOME_PAGE_ROUTE,
-  TOP_OWNERS_PAGE_ROUTE,
-} from "../constants/routes";
+import { HOME_PAGE_ROUTE } from "../constants/routes";
 import AsciiArt from "../components/AsciiArt";
 import SearchFetcher, { SearchQuery } from "../components/SearchFetcher";
 import { cleanText } from "../utils/utils";
@@ -20,7 +16,7 @@ export const CollectionQuery = (collectionAddress: string): string => {
     query CollectionInfo {
         collections(
             networks: [{chain: MAINNET, network: ETHEREUM}], 
-            pagination: {limit: 10, offset: 0}, 
+            pagination: {limit: 10}, 
             sort: {sortKey: NAME, sortDirection: ASC}, 
             where: {collectionAddresses: ["${collectionAddress}"]}
         ) {
@@ -155,7 +151,10 @@ export default function HomePage(): JSX.Element {
           >
             <Text size="large">{indent} hi </Text>
             <Text size="large">
-              {indent} i made this to test out the zora api
+              {indent} this is built entirely on the{" "}
+              <a style={{ textDecoration: "none" }} href="https://api.zora.co/">
+                zora api
+              </a>
             </Text>
             <Text size="large">
               {indent} you can click the{" "}

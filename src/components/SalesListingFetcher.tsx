@@ -15,7 +15,7 @@ const TopSalesQuery: string = `
         sales(
             networks: [{chain: MAINNET, network: ETHEREUM}], 
             pagination: {limit: 10}, 
-            sort: {sortKey: ETH_PRICE, sortDirection: DESC}, 
+            sort: {sortKey: CHAIN_TOKEN_PRICE, sortDirection: DESC}, 
             where: {collectionAddresses: [$collectionAddress]}
         ) {
             nodes {
@@ -29,7 +29,7 @@ const TopSalesQuery: string = `
                         blockTimestamp
                     }
                     price {
-                        ethPrice {
+                        chainTokenPrice {
                             decimal
                             currency {
                                 name

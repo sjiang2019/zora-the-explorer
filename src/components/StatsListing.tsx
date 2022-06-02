@@ -39,7 +39,7 @@ interface StatsDashboardProps {
 export default function StatsListing(props: StatsDashboardProps): JSX.Element {
   const lowestOnchainAskPrice = props.lowestOnchainAskPrice
     ? `${normalizeNumber(
-        props.lowestOnchainAskPrice.ethPrice
+        props.lowestOnchainAskPrice.chainTokenPrice
       )}Ξ ($${normalizeNumber(props.lowestOnchainAskPrice.usdcPrice)})`
     : "N/A";
   const statsList = [
@@ -59,26 +59,26 @@ export default function StatsListing(props: StatsDashboardProps): JSX.Element {
     <Stat
       statName="total value of all sales (lifetime)"
       statValue={`${normalizeNumber(
-        props.totalSalesVolume.ethPrice
+        props.totalSalesVolume.chainTokenPrice
       )}Ξ ($${normalizeNumber(props.totalSalesVolume.usdcPrice)})`}
     />,
     <Stat
       statName="value of sales (24 hours)"
       statValue={`${normalizeNumber(
-        props.lastDaySalesVolume.ethPrice
+        props.lastDaySalesVolume.chainTokenPrice
       )}Ξ ($${normalizeNumber(props.lastDaySalesVolume.usdcPrice)})`}
     />,
     <Stat
       statName="value of sales (week)"
       statValue={`${normalizeNumber(
-        props.lastWeekSalesVolume.ethPrice
+        props.lastWeekSalesVolume.chainTokenPrice
       )}Ξ ($${normalizeNumber(props.lastWeekSalesVolume.usdcPrice)})`}
     />,
     <Stat
       statName="value of sales (4 weeks)"
       statValue={`
         ${normalizeNumber(
-          props.lastFourWeeksSalesVolume.ethPrice
+          props.lastFourWeeksSalesVolume.chainTokenPrice
         )}Ξ ($${normalizeNumber(props.lastFourWeeksSalesVolume.usdcPrice)})`}
     />,
   ];
