@@ -13,6 +13,7 @@
     "@types/react": "^17.0.20",
     "@types/react-dom": "^17.0.9",
     "ascii-text-generator": "^1.0.5",
+    "gh-pages": "^4.0.0",
     "graphql": "^16.3.0",
     "grommet": "^2.22.0",
     "husky": "^8.0.1",
@@ -29,6 +30,8 @@
     "web-vitals": "^2.1.0"
   },
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "up": "PORT=7000 react-scripts start",
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -62,5 +65,6 @@
     "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
       "prettier --write"
     ]
-  }
+  },
+  "homepage": "https://zoratheexplorer.xyz"
 }
