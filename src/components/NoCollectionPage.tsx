@@ -21,7 +21,7 @@ export default function NoCollectionPage(): JSX.Element {
         to see which queries i used
       </Text>
       <Text size="large">
-        {indent} feel free to send feedback to{" "}
+        {indent} please send feedback to{" "}
         <a
           style={{ textDecoration: "none" }}
           href="https://twitter.com/_s_teev"
@@ -29,7 +29,15 @@ export default function NoCollectionPage(): JSX.Element {
           @_s_teev
         </a>
       </Text>
-      <Text size="large">{indent} ✌️</Text>
+      <Text size="large">
+        {indent}{" "}
+        <a
+          style={{ textDecoration: "none" }}
+          href="https://boards.greenhouse.io/zora"
+        >
+          ✌️
+        </a>
+      </Text>
     </Box>
   );
 }
